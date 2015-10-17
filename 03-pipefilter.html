@@ -42,20 +42,27 @@
 </ul>
 </div>
 </section>
-<p>Now that we know a few basic commands, we can finally look at the shell’s most powerful feature: the ease with which it lets us combine existing programs in new ways. We’ll start with a directory called <code>molecules</code> that contains six files describing some simple organic molecules. The <code>.pdb</code> extension indicates that these files are in Protein Data Bank format, a simple text format that specifies the type and position of each atom in the molecule.</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">ls</span> molecules</code></pre>
-<pre class="output"><code>cubane.pdb    ethane.pdb    methane.pdb
-octane.pdb    pentane.pdb   propane.pdb</code></pre>
-<p>Let’s go into that directory with <code>cd</code> and run the command <code>wc *.pdb</code>. <code>wc</code> is the “word count” command: it counts the number of lines, words, and characters in files. The <code>*</code> in <code>*.pdb</code> matches zero or more characters, so the shell turns <code>*.pdb</code> into a complete list of <code>.pdb</code> files:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> molecules
-$ <span class="kw">wc</span> *.pdb</code></pre>
-<pre class="output"><code>  20  156 1158 cubane.pdb
-  12   84  622 ethane.pdb
-   9   57  422 methane.pdb
-  30  246 1828 octane.pdb
-  21  165 1226 pentane.pdb
-  15  111  825 propane.pdb
- 107  819 6081 total</code></pre>
+<p>Now that we know a few basic commands, we can finally look at the shell’s most powerful feature: the ease with which it lets us combine existing programs in new ways. This can be powerful for quickly looking at the output of Avida. Let’s go back to <code>~/avida/cbuild/work/data</code> to practice on the output we generated before.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> ~/avida/cbuild/work/data
+$ <span class="kw">ls</span></code></pre>
+<pre class="output"><code>average.dat    detail-500.spop  grid_task.100.dat  grid_task.400.dat  tasks.dat
+count.dat      dominant.dat     grid_task.200.dat  grid_task.500.dat  time.dat
+detail-0.spop  grid_task.0.dat  grid_task.300.dat  resource.dat</code></pre>
+<p>Let’s run the command <code>wc *.dat</code>. <code>wc</code> is the “word count” command: it counts the number of lines, words, and characters in files. The <code>*</code> in <code>*.dat</code> matches zero or more characters, so the shell turns <code>*.dat</code> into a complete list of <code>.dat</code> files:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> *.dat</code></pre>
+<pre class="output"><code>   25   182   967 average.dat
+   25   210   960 count.dat
+   25   204  1007 dominant.dat
+   60  3600 10859 grid_task.0.dat
+   60  3600 10785 grid_task.100.dat
+   60  3600 10453 grid_task.200.dat
+   60  3600  9787 grid_task.300.dat
+   60  3600  8832 grid_task.400.dat
+   60  3600  7631 grid_task.500.dat
+   12    40   215 resource.dat
+   21   126   439 tasks.dat
+   13    48   259 time.dat
+  481 22410 62194 tota</code></pre>
 <aside class="callout panel panel-info">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pushpin"></span>Wildcards</h2>
@@ -63,59 +70,77 @@ $ <span class="kw">wc</span> *.pdb</code></pre>
 <div class="panel-body">
 <p><code>*</code> is a <strong>wildcard</strong>. It matches zero or more characters, so <code>*.pdb</code> matches <code>ethane.pdb</code>, <code>propane.pdb</code>, and every file that ends with ‘.pdb’. On the other hand, <code>p*.pdb</code> only matches <code>pentane.pdb</code> and <code>propane.pdb</code>, because the ‘p’ at the front only matches filenames that begin with the letter ‘p’.</p>
 <p><code>?</code> is also a wildcard, but it only matches a single character. This means that <code>p?.pdb</code> matches <code>pi.pdb</code> or <code>p5.pdb</code>, but not <code>propane.pdb</code>. We can use any number of wildcards at a time: for example, <code>p*.p?*</code> matches anything that starts with a ‘p’ and ends with ‘.’, ‘p’, and at least one more character (since the ‘?’ has to match one character, and the final ‘*’ can match any number of characters). Thus, <code>p*.p?*</code> would match <code>preferred.practice</code>, and even <code>p.pi</code> (since the first ‘*’ can match no characters at all), but not <code>quality.practice</code> (doesn’t start with ‘p’) or <code>preferred.p</code> (there isn’t at least one character after the ‘.p’).</p>
-<p>When the shell sees a wildcard, it expands the wildcard to create a list of matching filenames <em>before</em> running the command that was asked for. As an exception, if a wildcard expression does not match any file, Bash will pass the expression as a parameter to the command as it is. For example typing <code>ls *.pdf</code> in the molecules directory (which contains only files with names ending with <code>.pdb</code>) results in an error message that there is no file called <code>*.pdf</code>. However, generally commands like <code>wc</code> and <code>ls</code> see the lists of file names matching these expressions, but not the wildcards themselves. It is the shell, not the other programs, that deals with expanding wildcards, and this another example of orthogonal design.</p>
+<p>When the shell sees a wildcard, it expands the wildcard to create a list of matching filenames <em>before</em> running the command that was asked for. As an exception, if a wildcard expression does not match any file, Bash will pass the expression as a parameter to the command as it is. For example typing <code>ls *.pdf</code> in the molecules directory (which contains only files with names ending with <code>.pdb</code>) results in an error message that there is no file called <code>*.pdf</code>. However, generally commands like <code>wc</code> and <code>ls</code> see the lists of file names matching these expressions, but not the wildcards themselves. It is the shell, not the other programs, that deals with expanding wildcards, and this is another example of orthogonal design.</p>
 </div>
 </aside>
 <p>If we run <code>wc -l</code> instead of just <code>wc</code>, the output shows only the number of lines per file:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.pdb</code></pre>
-<pre class="output"><code>  20  cubane.pdb
-  12  ethane.pdb
-   9  methane.pdb
-  30  octane.pdb
-  21  pentane.pdb
-  15  propane.pdb
- 107  total</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.dat</code></pre>
+<pre class="output"><code>   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+   12 resource.dat
+   21 tasks.dat
+   13 time.dat
+  481 total</code></pre>
 <p>We can also use <code>-w</code> to get only the number of words, or <code>-c</code> to get only the number of characters.</p>
 <p>Which of these files is shortest? It’s an easy question to answer when there are only six files, but what if there were 6000? Our first step toward a solution is to run the command:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.pdb <span class="kw">&gt;</span> lengths.txt</code></pre>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.dat <span class="kw">&gt;</span> lengths.txt</code></pre>
 <p>The greater than symbol, <code>&gt;</code>, tells the shell to <strong>redirect</strong> the command’s output to a file instead of printing it to the screen. The shell will create the file if it doesn’t exist, or overwrite the contents of that file if it does. (This is why there is no screen output: everything that <code>wc</code> would have printed has gone into the file <code>lengths.txt</code> instead.) <code>ls lengths.txt</code> confirms that the file exists:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">ls</span> lengths.txt</code></pre>
 <pre class="output"><code>lengths.txt</code></pre>
 <p>We can now send the content of <code>lengths.txt</code> to the screen using <code>cat lengths.txt</code>. <code>cat</code> stands for “concatenate”: it prints the contents of files one after another. There’s only one file in this case, so <code>cat</code> just shows us what it contains:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cat</span> lengths.txt</code></pre>
-<pre class="output"><code>  20  cubane.pdb
-  12  ethane.pdb
-   9  methane.pdb
-  30  octane.pdb
-  21  pentane.pdb
-  15  propane.pdb
- 107  total</code></pre>
+<pre class="output"><code>   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+   12 resource.dat
+   21 tasks.dat
+   13 time.dat
+  481 total</code></pre>
 <p>Now let’s use the <code>sort</code> command to sort its contents. We will also use the -n flag to specify that the sort is numerical instead of alphabetical. This does <em>not</em> change the file; instead, it sends the sorted result to the screen:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">sort</span> -n lengths.txt</code></pre>
-<pre class="output"><code>  9  methane.pdb
- 12  ethane.pdb
- 15  propane.pdb
- 20  cubane.pdb
- 21  pentane.pdb
- 30  octane.pdb
-107  total</code></pre>
+<pre class="output"><code>   12 resource.dat
+   13 time.dat
+   21 tasks.dat
+   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+  481 total</code></pre>
 <p>We can put the sorted list of lines in another temporary file called <code>sorted-lengths.txt</code> by putting <code>&gt; sorted-lengths.txt</code> after the command, just as we used <code>&gt; lengths.txt</code> to put the output of <code>wc</code> into <code>lengths.txt</code>. Once we’ve done that, we can run another command called <code>head</code> to get the first few lines in <code>sorted-lengths.txt</code>:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">sort</span> -n lengths.txt <span class="kw">&gt;</span> sorted-lengths.txt
 $ <span class="kw">head</span> -1 sorted-lengths.txt</code></pre>
-<pre class="output"><code>  9  methane.pdb</code></pre>
+<pre class="output"><code>  12 resource.dat</code></pre>
 <p>Using the parameter <code>-1</code> with <code>head</code> tells it that we only want the first line of the file; <code>-20</code> would get the first 20, and so on. Since <code>sorted-lengths.txt</code> contains the lengths of our files ordered from least to greatest, the output of <code>head</code> must be the file with the fewest lines.</p>
 <p>If you think this is confusing, you’re in good company: even once you understand what <code>wc</code>, <code>sort</code>, and <code>head</code> do, all those intermediate files make it hard to follow what’s going on. We can make it easier to understand by running <code>sort</code> and <code>head</code> together:</p>
 <pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">sort</span> -n lengths.txt <span class="kw">|</span> <span class="kw">head</span> -1</code></pre>
-<pre class="output"><code>  9  methane.pdb</code></pre>
+<pre class="output"><code>  12 resource.dat</code></pre>
 <p>The vertical bar between the two commands is called a <strong>pipe</strong>. It tells the shell that we want to use the output of the command on the left as the input to the command on the right. The computer might create a temporary file if it needs to, or copy data from one program to the other in memory, or something else entirely; we don’t have to know or care.</p>
 <p>We can use another pipe to send the output of <code>wc</code> directly to <code>sort</code>, which then sends its output to <code>head</code>:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.pdb <span class="kw">|</span> <span class="kw">sort</span> -n <span class="kw">|</span> <span class="kw">head</span> -1</code></pre>
-<pre class="output"><code>  9  methane.pdb</code></pre>
-<p>This is exactly like a mathematician nesting functions like <em>log(3x)</em> and saying “the log of three times <em>x</em>”. In our case, the calculation is “head of sort of line count of <code>*.pdb</code>”.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.dat <span class="kw">|</span> <span class="kw">sort</span> -n <span class="kw">|</span> <span class="kw">head</span> -1</code></pre>
+<pre class="output"><code>  12 resource.dat</code></pre>
+<p>This is exactly like a mathematician nesting functions like <em>log(3x)</em> and saying “the log of three times <em>x</em>”. In our case, the calculation is “head of sort of line count of <code>*.dat</code>”.</p>
 <p>Here’s what actually happens behind the scenes when we create a pipe. When a computer runs a program — any program — it creates a <strong>process</strong> in memory to hold the program’s software and its current state. Every process has an input channel called <strong>standard input</strong>. (By this point, you may be surprised that the name is so memorable, but don’t worry: most Unix programmers call it “stdin”. Every process also has a default output channel called <strong>standard output</strong> (or “stdout”).</p>
 <p>The shell is actually just another program. Under normal circumstances, whatever we type on the keyboard is sent to the shell on its standard input, and whatever it produces on standard output is displayed on our screen. When we tell the shell to run a program, it creates a new process and temporarily sends whatever we type on our keyboard to that process’s standard input, and whatever the process sends to standard output to the screen.</p>
-<p>Here’s what happens when we run <code>wc -l *.pdb &gt; lengths.txt</code>. The shell starts by telling the computer to create a new process to run the <code>wc</code> program. Since we’ve provided some filenames as parameters, <code>wc</code> reads from them instead of from standard input. And since we’ve used <code>&gt;</code> to redirect output to a file, the shell connects the process’s standard output to that file.</p>
-<p>If we run <code>wc -l *.pdb | sort -n</code> instead, the shell creates two processes (one for each process in the pipe) so that <code>wc</code> and <code>sort</code> run simultaneously. The standard output of <code>wc</code> is fed directly to the standard input of <code>sort</code>; since there’s no redirection with <code>&gt;</code>, <code>sort</code>’s output goes to the screen. And if we run <code>wc -l *.pdb | sort -n | head -1</code>, we get three processes with data flowing from the files, through <code>wc</code> to <code>sort</code>, and from <code>sort</code> through <code>head</code> to the screen.</p>
+<p>Here’s what happens when we run <code>wc -l *.dat &gt; lengths.txt</code>. The shell starts by telling the computer to create a new process to run the <code>wc</code> program. Since we’ve provided some filenames as parameters, <code>wc</code> reads from them instead of from standard input. And since we’ve used <code>&gt;</code> to redirect output to a file, the shell connects the process’s standard output to that file.</p>
+<p>If we run <code>wc -l *.dat | sort -n</code> instead, the shell creates two processes (one for each process in the pipe) so that <code>wc</code> and <code>sort</code> run simultaneously. The standard output of <code>wc</code> is fed directly to the standard input of <code>sort</code>; since there’s no redirection with <code>&gt;</code>, <code>sort</code>’s output goes to the screen. And if we run <code>wc -l *.pdb | sort -n | head -1</code>, we get three processes with data flowing from the files, through <code>wc</code> to <code>sort</code>, and from <code>sort</code> through <code>head</code> to the screen.</p>
 <div class="figure">
 <img src="fig/redirects-and-pipes.png" alt="Redirects and Pipes" /><p class="caption">Redirects and Pipes</p>
 </div>
@@ -129,36 +154,6 @@ $ <span class="kw">head</span> -1 sorted-lengths.txt</code></pre>
 <p>As well as using <code>&gt;</code> to redirect a program’s output, we can use <code>&lt;</code> to redirect its input, i.e., to read from a file instead of from standard input. For example, instead of writing <code>wc ammonia.pdb</code>, we could write <code>wc &lt; ammonia.pdb</code>. In the first case, <code>wc</code> gets a command line parameter telling it what file to open. In the second, <code>wc</code> doesn’t have any command line parameters, so it reads from standard input, but we have told the shell to send the contents of <code>ammonia.pdb</code> to <code>wc</code>’s standard input.</p>
 </div>
 </aside>
-<h2 id="nelles-pipeline-checking-files">Nelle’s Pipeline: Checking Files</h2>
-<p>Nelle has run her samples through the assay machines and created 1520 files in the <code>north-pacific-gyre/2012-07-03</code> directory described earlier. As a quick sanity check, starting from her home directory, Nelle types:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> north-pacific-gyre/2012-07-03
-$ <span class="kw">wc</span> -l *.txt</code></pre>
-<p>The output is 1520 lines that look like this:</p>
-<pre class="output"><code>300 NENE01729A.txt
-300 NENE01729B.txt
-300 NENE01736A.txt
-300 NENE01751A.txt
-300 NENE01751B.txt
-300 NENE01812A.txt
-... ...</code></pre>
-<p>Now she types this:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.txt <span class="kw">|</span> <span class="kw">sort</span> -n <span class="kw">|</span> <span class="kw">head</span> -5</code></pre>
-<pre class="output"><code> 240 NENE02018B.txt
- 300 NENE01729A.txt
- 300 NENE01729B.txt
- 300 NENE01736A.txt
- 300 NENE01751A.txt</code></pre>
-<p>Whoops: one of the files is 60 lines shorter than the others. When she goes back and checks it, she sees that she did that assay at 8:00 on a Monday morning — someone was probably in using the machine on the weekend, and she forgot to reset it. Before re-running that sample, she checks to see if any files have too much data:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">wc</span> -l *.txt <span class="kw">|</span> <span class="kw">sort</span> -n <span class="kw">|</span> <span class="kw">tail</span> -5</code></pre>
-<pre class="output"><code> 300 NENE02040A.txt
- 300 NENE02040B.txt
- 300 NENE02040Z.txt
- 300 NENE02043A.txt
- 300 NENE02043B.txt</code></pre>
-<p>Those numbers look good — but what’s that ‘Z’ doing there in the third-to-last line? All of her samples should be marked ‘A’ or ‘B’; by convention, her lab uses ‘Z’ to indicate samples with missing information. To find others like it, she does this:</p>
-<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">ls</span> *Z.txt</code></pre>
-<pre class="output"><code>NENE01971Z.txt    NENE02040Z.txt</code></pre>
-<p>Sure enough, when she checks the log on her laptop, there’s no depth recorded for either of those samples. Since it’s too late to get the information any other way, she must exclude those two files from her analysis. She could just delete them using <code>rm</code>, but there are actually some analyses she might do later where depth doesn’t matter, so instead, she’ll just be careful later on to select files using the wildcard expression <code>*[AB].txt</code>. As always, the ‘*’ matches any number of characters; the expression <code>[AB]</code> matches either an ‘A’ or a ‘B’, so this matches all the valid data files she has.</p>
 <section class="challenge panel panel-success">
 <div class="panel-heading">
 <h2><span class="glyphicon glyphicon-pencil"></span>What does <code>sort -n</code> do?</h2>

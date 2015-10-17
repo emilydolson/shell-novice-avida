@@ -19,18 +19,18 @@ a bunch of commands saved in a file is usually called a **shell script**,
 but make no mistake:
 these are actually small programs.
 
-Let's start by going back to `molecules/` and putting the following line in the file `middle.sh`:
+Let's start by going back to `~/avida/cbuild/work/data` and putting the following line in the file `middle.sh`:
 
 ~~~ {.bash}
-$ cd molecules
+$ cd ~/avida/cbuild/work/data
 $ nano middle.sh
 ~~~
 ~~~
-head -15 octane.pdb | tail -5
+head -22 average.dat | tail -3
 ~~~
 
 This is a variation on the pipe we constructed earlier:
-it selects lines 11-15 of the file `octane.pdb`.
+it selects lines 19-22 of the file `average.dat`.
 Remember, we are *not* running it as a command just yet:
 we are putting the commands in a file.
 
@@ -42,11 +42,9 @@ Our shell is called `bash`, so we run the following command:
 $ bash middle.sh
 ~~~
 ~~~ {.output}
-ATOM      9  H           1      -4.502   0.681   0.785  1.00  0.00
-ATOM     10  H           1      -5.254  -0.243  -0.537  1.00  0.00
-ATOM     11  H           1      -4.357   1.252  -0.895  1.00  0.00
-ATOM     12  H           1      -3.009  -0.741  -1.467  1.00  0.00
-ATOM     13  H           1      -3.172  -1.337   0.206  1.00  0.00
+0 97 389 0 0 0 100 97 0 1 1 0 0 0 0 0 
+100 94.0267 386.707 0.242776 0 0 98.76 94.0267 0 0.04 0 0 7 1.71205 0 0 
+200 94.226 388.904 0.243294 0 0 100.59 95.4251 0 0.034398 0.02457 0 14.8722 1.14454 0 0 
 ~~~
 
 Sure enough,
@@ -68,13 +66,13 @@ What if we want to select lines from an arbitrary file?
 We could edit `middle.sh` each time to change the filename,
 but that would probably take longer than just retyping the command.
 Instead,
-let's edit `middle.sh` and replace `octane.pdb` with a special variable called `$1`:
+let's edit `middle.sh` and replace `average.dat` with a special variable called `$1`:
 
 ~~~ {.bash}
 $ cat middle.sh
 ~~~
 ~~~ {.output}
-head -15 "$1" | tail -5
+head -22 "$1" | tail -3
 ~~~
 
 Inside a shell script,
@@ -82,27 +80,23 @@ Inside a shell script,
 We can now run our script like this:
 
 ~~~ {.bash}
-$ bash middle.sh octane.pdb
+$ bash middle.sh average.dat
 ~~~
 ~~~ {.output}
-ATOM      9  H           1      -4.502   0.681   0.785  1.00  0.00
-ATOM     10  H           1      -5.254  -0.243  -0.537  1.00  0.00
-ATOM     11  H           1      -4.357   1.252  -0.895  1.00  0.00
-ATOM     12  H           1      -3.009  -0.741  -1.467  1.00  0.00
-ATOM     13  H           1      -3.172  -1.337   0.206  1.00  0.00
+0 97 389 0 0 0 100 97 0 1 1 0 0 0 0 0 
+100 94.0267 386.707 0.242776 0 0 98.76 94.0267 0 0.04 0 0 7 1.71205 0 0 
+200 94.226 388.904 0.243294 0 0 100.59 95.4251 0 0.034398 0.02457 0 14.8722 1.14454 0 0 
 ~~~
 
 or on a different file like this:
 
 ~~~ {.bash}
-$ bash middle.sh pentane.pdb
+$ bash middle.sh count.dat
 ~~~
 ~~~ {.output}
-ATOM      9  H           1       1.324   0.350  -1.332  1.00  0.00
-ATOM     10  H           1       1.271   1.378   0.122  1.00  0.00
-ATOM     11  H           1      -0.074  -0.384   1.288  1.00  0.00
-ATOM     12  H           1      -0.048  -1.362  -0.205  1.00  0.00
-ATOM     13  H           1      -1.183   0.500  -1.412  1.00  0.00
+0 30 1 1 1 0 0 0 1 0 1 1 1 1 0 0 
+100 2190 75 51 7 0 0 0 3 1 0 28 39 75 0 0 
+200 12060 407 311 38 0 0 0 14 9 10 150 235 407 0 0 
 ~~~
 
 
@@ -132,15 +126,16 @@ $ cat middle.sh
 head "$2" "$1" | tail "$3"
 ~~~
 ~~~ {.bash}
-$ bash middle.sh pentane.pdb -20 -5
+$ bash middle.sh resource.dat -9 -3
 ~~~
 ~~~ {.output}
-ATOM     14  H           1      -1.259   1.420   0.112  1.00  0.00
-ATOM     15  H           1      -2.608  -0.407   1.130  1.00  0.00
-ATOM     16  H           1      -2.540  -1.303  -0.404  1.00  0.00
-ATOM     17  H           1      -3.393   0.254  -0.321  1.00  0.00
-TER      18              1
+0
+100
+200
 ~~~
+
+We didn't add any resources to the environment, so there are no columns
+besides update!
 
 This works,
 but it may take the next person who reads `middle.sh` a moment to figure out what it does.
@@ -160,17 +155,17 @@ The computer ignores comments,
 but they're invaluable for helping people understand and use scripts.
 
 What if we want to process many files in a single pipeline?
-For example, if we want to sort our `.pdb` files by length, we would type:
+For example, if we want to sort our `.dat` files by length, we would type:
 
 ~~~ {.bash}
-$ wc -l *.pdb | sort -n
+$ wc -l *.dat | sort -n
 ~~~
 
 because `wc -l` lists the number of lines in the files
 (recall that wc stands for 'word count', adding the -l flag means 'count lines' instead)
 and `sort -n` sorts things numerically.
 We could put this in a file,
-but then it would only ever sort a list of `.pdb` files in the current directory.
+but then it would only ever sort a list of `.dat` files in the current directory.
 If we want to be able to get a sorted list of other kinds of files,
 we need a way to get all those names into the script.
 We can't use `$1`, `$2`, and so on
@@ -190,17 +185,24 @@ $ cat sorted.sh
 wc -l "$@" | sort -n
 ~~~
 ~~~ {.bash}
-$ bash sorted.sh *.pdb ../creatures/*.dat
+$ bash sorted.sh *.dat *.spop
 ~~~
 ~~~ {.output}
-9 methane.pdb
-12 ethane.pdb
-15 propane.pdb
-20 cubane.pdb
-21 pentane.pdb
-30 octane.pdb
-163 ../creatures/basilisk.dat
-163 ../creatures/unicorn.dat
+   12 resource.dat
+   13 time.dat
+   21 tasks.dat
+   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+   26 detail-0.spop
+   4713 detail-500.spop
+
 ~~~
 
 > ## Why Isn't It Doing Anything? {.callout}
@@ -299,67 +301,32 @@ what they discover about their data and their workflow with one call to `history
 and a bit of editing to clean up the output
 and save it as a shell script.
 
-## Nelle's Pipeline: Creating a Script
+In addition to being generally cool, shell scripts let you submit jobs to the
+HPCC. If your job is longer than 2 hours (which Avida runs usually are) or
+you want to run more than one copy (which you usually do with Avida), this
+is critical.
 
-An off-hand comment from her supervisor has made Nelle realize that
-she should have provided a couple of extra parameters to `goostats` when she processed her files.
-This might have been a disaster if she had done all the analysis by hand,
-but thanks to for loops,
-it will only take a couple of hours to re-do.
-
-But experience has taught her that if something needs to be done twice,
-it will probably need to be done a third or fourth time as well.
-She runs the editor and writes the following:
+A submission script is basically just a bash script with some fancy comments
+at the top to tell the scheduler how to run it:
 
 ~~~
-# Calculate reduced stats for data files at J = 100 c/bp.
-for datafile in "$@"
-do
-    echo $datafile
-    bash goostats -J 100 -r $datafile stats-$datafile
-done
+#!/bin/bash -login
+#PBS -l walltime=4:00:00
+#PBS -l mem=4096mb
+#PBS -N complex_features
+#PBS -t 1-5
+#PBS -M [your email address]
+
+cd complex_features_experiment/results/all_rewarded
+mkdir ${PBS_ARRAYID}
+cd ${PBS_ARRAYID}
+
+cp -r ../configs/* .
+
+./avida -set RANDOM_SEED ${PBS_ARRAY_ID} -set COPY_MUT_PROB 0.0025 
 ~~~
 
-(The parameters `-J 100` and `-r` are the ones her supervisor said she should have used.)
-She saves this in a file called `do-stats.sh`
-so that she can now re-do the first stage of her analysis by typing:
-
-~~~ {.bash}
-$ bash do-stats.sh *[AB].txt
-~~~
-
-She can also do this:
-
-~~~ {.bash}
-$ bash do-stats.sh *[AB].txt | wc -l
-~~~
-
-so that the output is just the number of files processed
-rather than the names of the files that were processed.
-
-One thing to note about Nelle's script is that
-it lets the person running it decide what files to process.
-She could have written it as:
-
-~~~
-# Calculate reduced stats for  A and Site B data files at J = 100 c/bp.
-for datafile in *[AB].txt
-do
-    echo $datafile
-    bash goostats -J 100 -r $datafile stats-$datafile
-done
-~~~
-
-The advantage is that this always selects the right files:
-she doesn't have to remember to exclude the 'Z' files.
-The disadvantage is that it *always* selects just those files --- she can't run it on all files
-(including the 'Z' files),
-or on the 'G' or 'H' files her colleagues in Antarctica are producing,
-without editing the script.
-If she wanted to be more adventurous,
-she could modify her script to check for command-line parameters,
-and use `*[AB].txt` if none were provided.
-Of course, this introduces another tradeoff between flexibility and complexity.
+TODO: More details on submitting
 
 > ## Variables in shell scripts {.challenge}
 >

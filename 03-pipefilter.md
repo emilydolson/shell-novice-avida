@@ -15,37 +15,43 @@ minutes: 15
 Now that we know a few basic commands,
 we can finally look at the shell's most powerful feature:
 the ease with which it lets us combine existing programs in new ways.
-We'll start with a directory called `molecules`
-that contains six files describing some simple organic molecules.
-The `.pdb` extension indicates that these files are in Protein Data Bank format,
-a simple text format that specifies the type and position of each atom in the molecule.
+This can be powerful for quickly looking at the output of Avida.
+Let's go back to `~/avida/cbuild/work/data` to practice on the output we
+generated before.
 
 ~~~ {.bash}
-$ ls molecules
+$ cd ~/avida/cbuild/work/data
+$ ls
 ~~~
 ~~~ {.output}
-cubane.pdb    ethane.pdb    methane.pdb
-octane.pdb    pentane.pdb   propane.pdb
+average.dat    detail-500.spop  grid_task.100.dat  grid_task.400.dat  tasks.dat
+count.dat      dominant.dat     grid_task.200.dat  grid_task.500.dat  time.dat
+detail-0.spop  grid_task.0.dat  grid_task.300.dat  resource.dat
 ~~~
 
-Let's go into that directory with `cd` and run the command `wc *.pdb`.
+Let's run the command `wc *.dat`.
 `wc` is the "word count" command:
 it counts the number of lines, words, and characters in files.
-The `*` in `*.pdb` matches zero or more characters,
-so the shell turns `*.pdb` into a complete list of `.pdb` files:
+The `*` in `*.dat` matches zero or more characters,
+so the shell turns `*.dat` into a complete list of `.dat` files:
 
 ~~~ {.bash}
-$ cd molecules
-$ wc *.pdb
+$ wc *.dat
 ~~~
 ~~~ {.output}
-  20  156 1158 cubane.pdb
-  12   84  622 ethane.pdb
-   9   57  422 methane.pdb
-  30  246 1828 octane.pdb
-  21  165 1226 pentane.pdb
-  15  111  825 propane.pdb
- 107  819 6081 total
+   25   182   967 average.dat
+   25   210   960 count.dat
+   25   204  1007 dominant.dat
+   60  3600 10859 grid_task.0.dat
+   60  3600 10785 grid_task.100.dat
+   60  3600 10453 grid_task.200.dat
+   60  3600  9787 grid_task.300.dat
+   60  3600  8832 grid_task.400.dat
+   60  3600  7631 grid_task.500.dat
+   12    40   215 resource.dat
+   21   126   439 tasks.dat
+   13    48   259 time.dat
+  481 22410 62194 tota
 ~~~
 
 > ## Wildcards {.callout}
@@ -83,16 +89,22 @@ If we run `wc -l` instead of just `wc`,
 the output shows only the number of lines per file:
 
 ~~~ {.bash}
-$ wc -l *.pdb
+$ wc -l *.dat
 ~~~
 ~~~ {.output}
-  20  cubane.pdb
-  12  ethane.pdb
-   9  methane.pdb
-  30  octane.pdb
-  21  pentane.pdb
-  15  propane.pdb
- 107  total
+   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+   12 resource.dat
+   21 tasks.dat
+   13 time.dat
+  481 total
 ~~~
 
 We can also use `-w` to get only the number of words,
@@ -104,7 +116,7 @@ but what if there were 6000?
 Our first step toward a solution is to run the command:
 
 ~~~ {.bash}
-$ wc -l *.pdb > lengths.txt
+$ wc -l *.dat > lengths.txt
 ~~~
 
 The greater than symbol, `>`, tells the shell to **redirect** the command's output
@@ -132,13 +144,19 @@ so `cat` just shows us what it contains:
 $ cat lengths.txt
 ~~~
 ~~~ {.output}
-  20  cubane.pdb
-  12  ethane.pdb
-   9  methane.pdb
-  30  octane.pdb
-  21  pentane.pdb
-  15  propane.pdb
- 107  total
+   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+   12 resource.dat
+   21 tasks.dat
+   13 time.dat
+  481 total
 ~~~
 
 Now let's use the `sort` command to sort its contents.
@@ -151,13 +169,19 @@ instead, it sends the sorted result to the screen:
 $ sort -n lengths.txt
 ~~~
 ~~~ {.output}
-  9  methane.pdb
- 12  ethane.pdb
- 15  propane.pdb
- 20  cubane.pdb
- 21  pentane.pdb
- 30  octane.pdb
-107  total
+   12 resource.dat
+   13 time.dat
+   21 tasks.dat
+   25 average.dat
+   25 count.dat
+   25 dominant.dat
+   60 grid_task.0.dat
+   60 grid_task.100.dat
+   60 grid_task.200.dat
+   60 grid_task.300.dat
+   60 grid_task.400.dat
+   60 grid_task.500.dat
+  481 total
 ~~~
 
 We can put the sorted list of lines in another temporary file called `sorted-lengths.txt`
@@ -171,7 +195,7 @@ $ sort -n lengths.txt > sorted-lengths.txt
 $ head -1 sorted-lengths.txt
 ~~~
 ~~~ {.output}
-  9  methane.pdb
+  12 resource.dat
 ~~~
 
 Using the parameter `-1` with `head` tells it that
@@ -191,7 +215,7 @@ We can make it easier to understand by running `sort` and `head` together:
 $ sort -n lengths.txt | head -1
 ~~~
 ~~~ {.output}
-  9  methane.pdb
+  12 resource.dat
 ~~~
 
 The vertical bar between the two commands is called a **pipe**.
@@ -207,16 +231,16 @@ We can use another pipe to send the output of `wc` directly to `sort`,
 which then sends its output to `head`:
 
 ~~~ {.bash}
-$ wc -l *.pdb | sort -n | head -1
+$ wc -l *.dat | sort -n | head -1
 ~~~
 ~~~ {.output}
-  9  methane.pdb
+  12 resource.dat
 ~~~
 
 This is exactly like a mathematician nesting functions like *log(3x)*
 and saying "the log of three times *x*".
 In our case,
-the calculation is "head of sort of line count of `*.pdb`".
+the calculation is "head of sort of line count of `*.dat`".
 
 Here's what actually happens behind the scenes when we create a pipe.
 When a computer runs a program --- any program --- it creates a **process**
@@ -236,14 +260,14 @@ it creates a new process
 and temporarily sends whatever we type on our keyboard to that process's standard input,
 and whatever the process sends to standard output to the screen.
 
-Here's what happens when we run `wc -l *.pdb > lengths.txt`.
+Here's what happens when we run `wc -l *.dat > lengths.txt`.
 The shell starts by telling the computer to create a new process to run the `wc` program.
 Since we've provided some filenames as parameters,
 `wc` reads from them instead of from standard input.
 And since we've used `>` to redirect output to a file,
 the shell connects the process's standard output to that file.
 
-If we run `wc -l *.pdb | sort -n` instead,
+If we run `wc -l *.dat | sort -n` instead,
 the shell creates two processes
 (one for each process in the pipe)
 so that `wc` and `sort` run simultaneously.
@@ -287,87 +311,6 @@ so that you and other people can put those programs into pipes to multiply their
 > any command line parameters, so it reads from standard input, but we
 > have told the shell to send the contents of `ammonia.pdb` to `wc`'s
 > standard input.
-
-## Nelle's Pipeline: Checking Files
-
-Nelle has run her samples through the assay machines
-and created 1520 files in the `north-pacific-gyre/2012-07-03` directory described earlier.
-As a quick sanity check, starting from her home directory, Nelle types:
-
-~~~ {.bash}
-$ cd north-pacific-gyre/2012-07-03
-$ wc -l *.txt
-~~~
-
-The output is 1520 lines that look like this:
-
-~~~ {.output}
-300 NENE01729A.txt
-300 NENE01729B.txt
-300 NENE01736A.txt
-300 NENE01751A.txt
-300 NENE01751B.txt
-300 NENE01812A.txt
-... ...
-~~~
-
-Now she types this:
-
-~~~ {.bash}
-$ wc -l *.txt | sort -n | head -5
-~~~
-~~~ {.output}
- 240 NENE02018B.txt
- 300 NENE01729A.txt
- 300 NENE01729B.txt
- 300 NENE01736A.txt
- 300 NENE01751A.txt
-~~~
-
-Whoops: one of the files is 60 lines shorter than the others.
-When she goes back and checks it,
-she sees that she did that assay at 8:00 on a Monday morning --- someone
-was probably in using the machine on the weekend,
-and she forgot to reset it.
-Before re-running that sample,
-she checks to see if any files have too much data:
-
-~~~ {.bash}
-$ wc -l *.txt | sort -n | tail -5
-~~~
-~~~ {.output}
- 300 NENE02040A.txt
- 300 NENE02040B.txt
- 300 NENE02040Z.txt
- 300 NENE02043A.txt
- 300 NENE02043B.txt
-~~~
-
-Those numbers look good --- but what's that 'Z' doing there in the third-to-last line?
-All of her samples should be marked 'A' or 'B';
-by convention,
-her lab uses 'Z' to indicate samples with missing information.
-To find others like it, she does this:
-
-~~~ {.bash}
-$ ls *Z.txt
-~~~
-~~~ {.output}
-NENE01971Z.txt    NENE02040Z.txt
-~~~
-
-Sure enough,
-when she checks the log on her laptop,
-there's no depth recorded for either of those samples.
-Since it's too late to get the information any other way,
-she must exclude those two files from her analysis.
-She could just delete them using `rm`,
-but there are actually some analyses she might do later where depth doesn't matter,
-so instead, she'll just be careful later on to select files using the wildcard expression `*[AB].txt`.
-As always,
-the '\*' matches any number of characters;
-the expression `[AB]` matches either an 'A' or a 'B',
-so this matches all the valid data files she has.
 
 > ## What does `sort -n` do? {.challenge}
 >

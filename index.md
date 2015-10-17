@@ -41,11 +41,13 @@ These lessons will start you on a path towards using these resources effectively
 
 1.  [Introducing the Shell](00-intro.html)
 2.  [Files and Directories](01-filedir.html)
-3.  [Creating Things](02-create.html)
-4.  [Pipes and Filters](03-pipefilter.html)
-5.  [Loops](04-loop.html)
+3.  [Connecting to Remote Computers](07-connect.html)
+4.  [Running Avida](08-avida.html)
+5.  [Creating Things](02-create.html)
 6.  [Shell Scripts](05-script.html)
-7.  [Finding Things](06-find.html)
+7.  [Pipes and Filters](03-pipefilter.html)
+8.  [Loops](04-loop.html)
+9.  [Finding Things](06-find.html)
 
 ## Other Resources
 

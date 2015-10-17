@@ -21,22 +21,22 @@ and use `ls -F` to see what it contains:
 $ pwd
 ~~~
 ~~~ {.output}
-/Users/nelle
+/mnt/home/nelle
 ~~~
 ~~~ {.bash}
 $ ls -F
 ~~~
 ~~~ {.output}
-creatures/  molecules/           pizza.cfg
-data/       north-pacific-gyre/  solar.pdf
-Desktop/    notes.txt            writing/
+avida/    notes.txt
 ~~~
 
-Let's create a new directory called `thesis` using the command `mkdir thesis`
-(which has no output):
+We're going to repeat a classic Avida experiment on the [origin of complex
+features](http://myxo.css.msu.edu/papers/nature2003/Nature03_Complex.pdf).
+Let's set up a directory structure to keep track of everything.
+
 
 ~~~ {.bash}
-$ mkdir thesis
+$ mkdir complex_features_experiment
 ~~~
 
 As you might (or might not) guess from its name,
@@ -49,24 +49,21 @@ the new directory is created in the current working directory:
 $ ls -F
 ~~~
 ~~~ {.output}
-creatures/  north-pacific-gyre/  thesis/
-data/       notes.txt            writing/
-Desktop/    pizza.cfg
-molecules/  solar.pdf
+avida/    notes.txt    complex_features_experiment/
 ~~~
 
 However, there's nothing in it yet:
 
 ~~~ {.bash}
-$ ls -F thesis
+$ ls -F complex_features_experiment
 ~~~
 
-Let's change our working directory to `thesis` using `cd`,
-then run a text editor called Nano to create a file called `draft.txt`:
+Let's change our working directory to `complex_features_experiment` using `cd`,
+then run a text editor called Nano to create a file called `notes.txt`:
 
 ~~~ {.bash}
-$ cd thesis
-$ nano draft.txt
+$ cd complex_features_experiment
+$ nano notes.txt
 ~~~
 
 > ## Which Editor? {.callout}
@@ -104,13 +101,13 @@ but `ls` now shows that we have created a file called `draft.txt`:
 $ ls
 ~~~
 ~~~ {.output}
-draft.txt
+notes.txt
 ~~~
 
 Let's tidy up by running `rm draft.txt`:
 
 ~~~ {.bash}
-$ rm draft.txt
+$ rm notes.txt
 ~~~
 
 This command removes files ("rm" is short for "remove").
@@ -133,20 +130,20 @@ $ ls
 > file's disk space right away.
 
 Let's re-create that file
-and then move up one directory to `/Users/nelle` using `cd ..`:
+and then move up one directory to `/mnt/home/nelle` using `cd ..`:
 
 ~~~ {.bash}
 $ pwd
 ~~~
 ~~~ {.output}
-/Users/nelle/thesis
+/mnt/home/nelle/complex_features_experiment
 ~~~
 ~~~ {.bash}
-$ nano draft.txt
+$ nano notes.txt
 $ ls
 ~~~
 ~~~ {.output}
-draft.txt
+notes.txt
 ~~~
 ~~~ {.bash}
 $ cd ..
@@ -156,10 +153,10 @@ If we try to remove the entire `thesis` directory using `rm thesis`,
 we get an error message:
 
 ~~~ {.bash}
-$ rm thesis
+$ rm complex_features_experiment
 ~~~
 ~~~ {.error}
-rm: cannot remove `thesis': Is a directory
+rm: cannot remove `complex_features_experiment': Is a directory
 ~~~
 
 This happens because `rm` only works on files, not directories.
@@ -169,7 +166,7 @@ It doesn't work yet either, though,
 because the directory we're trying to remove isn't empty:
 
 ~~~ {.bash}
-$ rmdir thesis
+$ rmdir complex_features_experiment
 ~~~
 ~~~ {.error}
 rmdir: failed to remove `thesis': Directory not empty
@@ -180,13 +177,13 @@ particularly if you are a bad typist.
 To really get rid of `thesis` we must first delete the file `draft.txt`:
 
 ~~~ {.bash}
-$ rm thesis/draft.txt
+$ rm complex_features_experiment/notes.txt
 ~~~
 
 The directory is now empty, so `rmdir` can delete it:
 
 ~~~ {.bash}
-$ rmdir thesis
+$ rmdir complex_features_experiment
 ~~~
 
 > ## With Great Power Comes Great Responsibility {.callout}
@@ -205,53 +202,57 @@ $ rmdir thesis
 > without care.
 
 Let's create that directory and file one more time.
-(Note that this time we're running `nano` with the path `thesis/draft.txt`,
-rather than going into the `thesis` directory and running `nano` on `draft.txt` there.)
+(Note that this time we're running `nano` with the path 
+`complex_features_experiment/notes.txt`,
+rather than going into the `complex_features_experiment` directory and 
+running `nano` on `notes.txt` there.)
 
 ~~~ {.bash}
 $ pwd
 ~~~
 ~~~ {.output}
-/Users/nelle
+/mnt/home/nelle
 ~~~
 ~~~ {.bash}
-$ mkdir thesis
+$ mkdir complex_features_experiment
 ~~~
 ~~~ {.bash}
-$ nano thesis/draft.txt
-$ ls thesis
+$ nano complex_features_experiment/notees.txt
+$ ls complex_features_experiment
 ~~~
 ~~~ {.output}
-draft.txt
+notes.txt
 ~~~
 
-`draft.txt` isn't a particularly informative name,
+`notes.txt` isn't a particularly informative name,
 so let's change the file's name using `mv`,
 which is short for "move":
 
 ~~~ {.bash}
-$ mv thesis/draft.txt thesis/quotes.txt
+$ mv complex_features_experiment/notes.txt complex_features_experiment/experiments.txt
 ~~~
 
 The first parameter tells `mv` what we're "moving",
 while the second is where it's to go.
 In this case,
-we're moving `thesis/draft.txt` to `thesis/quotes.txt`,
+we're moving `complex_features_experiment/notes.txt` to 
+`complex_features_experiment/experiments.txt`
 which has the same effect as renaming the file.
 Sure enough,
-`ls` shows us that `thesis` now contains one file called `quotes.txt`:
+`ls` shows us that `complex_features_experiment` now contains one file 
+called `experiments.txt`:
 
 ~~~ {.bash}
-$ ls thesis
+$ ls complex_features_experiments
 ~~~
 ~~~ {.output}
-quotes.txt
+experiments.txt
 ~~~
 
 Just for the sake of inconsistency,
 `mv` also works on directories --- there is no separate `mvdir` command.
 
-Let's move `quotes.txt` into the current working directory.
+Let's move `experiments.txt` into the current working directory.
 We use `mv` once again,
 but this time we'll just use the name of a directory as the second parameter
 to tell `mv` that we want to keep the filename,
@@ -261,14 +262,14 @@ In this case,
 the directory name we use is the special directory name `.` that we mentioned earlier.
 
 ~~~ {.bash}
-$ mv thesis/quotes.txt .
+$ mv complex_features_experiment/experiments.txt .
 ~~~
 
 The effect is to move the file from the directory it was in to the current working directory.
-`ls` now shows us that `thesis` is empty:
+`ls` now shows us that `complex_features_experiment` is empty:
 
 ~~~ {.bash}
-$ ls thesis
+$ ls complex_features_experiment
 ~~~
 
 Further,
@@ -276,10 +277,10 @@ Further,
 We can use this to see that `quotes.txt` is still in our current directory:
 
 ~~~ {.bash}
-$ ls quotes.txt
+$ ls experiments.txt
 ~~~
 ~~~ {.output}
-quotes.txt
+experiments.txt
 ~~~
 
 The `cp` command works very much like `mv`,
@@ -289,27 +290,28 @@ with two paths as parameters --- like most Unix commands,
 `ls` can be given thousands of paths at once:
 
 ~~~ {.bash}
-$ cp quotes.txt thesis/quotations.txt
-$ ls quotes.txt thesis/quotations.txt
+$ cp experiments.txt complex_features_experiment/planned_experiments.txt
+$ ls 
 ~~~
 ~~~ {.output}
-quotes.txt   thesis/quotations.txt
+experiments.txt complex_features_experiment/planned_experiments.txt
 ~~~
 
 To prove that we made a copy,
-let's delete the `quotes.txt` file in the current directory
+let's delete the `experiments.txt` file in the current directory
 and then run that same `ls` again.
 
 ~~~ {.bash}
-$ rm quotes.txt
-$ ls quotes.txt thesis/quotations.txt
+$ rm experiments.txt
+$ ls experiments.txt complex_features_experiment/planned_experiments.txt
 ~~~
 ~~~ {.error}
-ls: cannot access quotes.txt: No such file or directory
-thesis/quotations.txt
+ls: cannot access experiments.txt: No such file or directory
+complex_features_experiment/planned_experiments.txt
 ~~~
-This time it tells us that it can't find `quotes.txt` in the current directory,
-but it does find the copy in `thesis` that we didn't delete.
+This time it tells us that it can't find `experiments.txt` in the current 
+directory, but it does find the copy in `complex_features_experiment` 
+that we didn't delete.
 
 > ## Another Useful Abbreviation {.callout}
 >
@@ -318,6 +320,25 @@ but it does find the copy in `thesis` that we didn't delete.
 > directory is `/Users/nelle`, then `~/data` is equivalent to
 > `/Users/nelle/data`. This only works if it is the first character in the
 > path: `here/there/~/elsewhere` is *not* `/Users/nelle/elsewhere`.
+
+To get ready for the next step, let's make a few more directories:
+
+~~~ {.bash}
+$ cd complex_features_experiment
+$ mkdir configs
+$ mkdir results
+$ mkdir results/all_rewarded
+$ mkdir results/equ_rewarded
+~~~
+
+Now let's copy the Avida config files into our configs directory, so that
+we always know what configs we used to run this experiment:
+
+~~~ {.bash}
+$ cp ~/avida/cbuild/work/*.cfg configs
+$ cp ~/avida/cbuild/work/*.org configus
+$ cp ~/avida/cbuild/work/avida configus
+~~~
 
 > ## Renaming files {.challenge}
 >
