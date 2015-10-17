@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: The Unix Shell</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <a href="index.html"><h1 class="title">The Unix Shell</h1></a>
+          <h2 class="subtitle">Running Avida</h2>
+          <section class="objectives panel panel-warning">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-certificate"></span>Learning Objectives</h2>
+</div>
+<div class="panel-body">
+<ul>
+<li>Install Avida</li>
+<li>Run Avida</li>
+<li>Change Avida configurations</li>
+</ul>
+</div>
+</section>
+<p>The whole reason that we wanted to log onto the HPCC in the first place was so we could run Avida. In order to do that, we need to install Avida! The first step is to download the code. Avida is open source, and publicly available on github. So the easiest way to get the code is to clone the repository</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">git</span> clone https://github.com/devosoft/avida.git</code></pre>
+<p>Now that we have the code, we need to compile it. We can do that by going into the directory that was just created and running the <code>build_avida</code> script. This might take a few minutes…</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> avida
+$ <span class="kw">./build_avida</span></code></pre>
+<p>Ta-da! Now we have avida on our HPCC account. There’s a lot going on in the avida directory:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">ls</span></code></pre>
+<pre class="output"><code>apps        Avida.xcworkspace  build.xml  CMakeLists.txt  libs    run_tests
+avida-core  build_avida        cbuild     documentation   README</code></pre>
+<p>All of the code is in directories inside <code>avida/avida-core/source</code>:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">ls</span> avida-core/source</code></pre>
+<pre class="output"><code>actions  cpu      environment  output    systematics  util    viewer-core
+analyze  data     Jamfile      platform  targets      utils
+core     drivers  main         script    tools        viewer</code></pre>
+<p><code>avida/avida-core</code> also contains the <code>tests</code> directory. Theoretically, every feature in Avida shouldhave its own test, and this is where they all live. These tests help us make sure that we haven’t accidentally broken anything when we added a new feature. If you ever add features to Avida, you should add tests for them too! Having a set of tests is a good idea for any piece of code that you write. To run all of the tests, you can use the <code>run_tests</code> script in the <code>avida</code> directory:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">./run_tests</span></code></pre>
+<p>Another useful feature in the main Avida directory is the <code>documentation</code> directory. The <a href="https://github.com/devosoft/avida/wiki">github wiki</a> is generally more up-to-date, but the included documentation can be a good quick reference. Even the github wiki doesn’t document all of Avida’s features, though. This is something we are constantly working to improve (and you should feel free to help if you notice something missing!).</p>
+<p>Anyway, let’s get to the main event. The avida executable file is located in <code>avida/cbuild/work</code>, as are all of the necessary configuration files:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> cbuild/work
+$ <span class="kw">ls</span></code></pre>
+<pre class="output"><code>analyze.cfg        default-heads-sex.org  instset-heads.cfg
+avida              default-transsmt.org   instset-heads-sex.cfg
+avida.cfg          environment.cfg        instset-transsmt.cfg
+default-heads.org  events.cfg</code></pre>
+<p>The avida executable is the file called <code>avida</code>. Let’s try running it!</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">./avida</span></code></pre>
+<p>Avida is off and running! You should see four columns of scrolling numbers. The first column lists the current update. Updates are the underlying unit of time in Avida. Every update, each organism executes an average of 30 instructions. The next column shows the current average generation across the population. The third column shows the current average fitness. Fitness in Avida is measured by dividing the speed at which organisms can execute the instructions in their genomes (merit) by the length of their genome (gestation time). As a result, it is an approximate measure of the number of offspring we expect that organism to produce. The last column in the output shows the number of organsisms in the population. By default, the population is started off with a single organism that is capable of copying itself. Over the first few hundred updates, its descendants fill up the environment (a 60x60 grid, by default). After that, the population size generally stays relatively constant at around 3600 (the number that can fit in the environment), unless you do something to it.</p>
+<p>By default, Avida will run for 100,000 updates. We don’t have time for that right now, so let’s stop it. We can do that by holding down the <code>ctrl</code> and <code>c</code> keys simultaneously. This will stop most programs, including Avida.</p>
+<p>While it was running, Avida probably outputted some data about the first few hundred updates. Let’s take a look:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> data
+$ <span class="kw">ls</span></code></pre>
+<pre class="output"><code>average.dat  detail-0.spop    dominant.dat  tasks.dat
+count.dat    detail-500.spop  resource.dat  time.dat</code></pre>
+<p>These are the default data files the Avida produces. Let’s start with <code>time.dat</code>:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cat</span> time.dat</code></pre>
+<pre class="output"><code># Avida time data
+# Sat Oct 10 22:28:05 2015
+#  1: update
+#  2: avida time
+#  3: average generation
+#  4: num_executed?
+
+0 0 0 30 
+100 1.03086 6.77551 1470 
+200 2.0754 14.8343 10800 
+300 3.1134 22.6788 29610 
+400 4.14478 30.4458 57060 
+500 5.17496 38.2065 92040</code></pre>
+<p>The four numbered lines tell us what is in each of the columns. For instance, the first column indicates which update that row of data was from. The numbers are all round because, by default, data is outputted every hundered updates. The other <code>.dat</code> files have a similar format.</p>
+<p>There’s another kind of output file here: the <code>detail-*.spop</code> files. These files are snapshots of the population taken at the specified number of updates. They contain the complete genotypes, counts, lineages, and more, for all organisms in the population.</p>
+<p>There are many more data files that you can have Avida output if you want - these are just the default set. We can control when which data files get output (among many many other things) by modifying the <code>events.cfg</code> file. So that we don’t lose the default events file, we’ll make our changes to a copy.</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> ..
+$ <span class="kw">cp</span> events.cfg events_test.cfg
+$ <span class="kw">nano</span> events_test.cfg</code></pre>
+<p>Notice that all of the non-comment lines in this file start with <code>u</code>, followed by one or more numbers. The <code>u</code> indicates that the numbers represent updates at which the specified action is to be performed. Lines that just have a single number indicate that an action is only supposed to happen once, at the specified update. Lines containing three numbers separated by colons (e.g. x:y:z) indicate that an action is to be performed every y updates between update x and update z. <code>end</code> is a special word that means an event should happen whenever the run ends. <code>begin</code> is a special word that means that an event should happen when the run is started.</p>
+<p>For instance, this line: <sub>~</sub> {.output} u 0:100:end PrintAverageData <sub>~</sub></p>
+<p>will add a line to <code>average.dat</code> every 100 updates from the beggining of the run to the end of the run.</p>
+<p>Most of the actions in the default <code>events.cfg</code> file just print out data. There are two exceptions to this:</p>
+<p>The first event in the file is: <sub>~</sub> {.output} u begin Inject default-heads.org <sub>~</sub></p>
+<p>This tells Avida to add one organism of the type specified in the file <code>default-heads.org</code> to the population at the begginign of the run. This is the seed organism, from which all others will be descended. If we look inside the <code>default-heads.org</code> file, we can see that it contains the entire sequence of assembly code that makes up the organism’s genome. In this case, it’s mosly filler instructions (<code>nop-C</code>), with a loop that copies itself. For more information, take a look at <a href="https://github.com/devosoft/avida/wiki/Default-Ancestor-Guided-Tour">this page</a>.</p>
+<p>The last event in the file is: <sub>~</sub> {.output} u 100000 Exit<br /><sub>~</sub></p>
+<p>This tells Avida to stop running when it reaches the 100,000th update.</p>
+<p>For the sake of trying out some things quickly, let’s tell Avida to only run for 500 updates: <sub>~</sub> {.output} u 500 Exit<br /><sub>~</sub></p>
+<p>Let’s also add another event, to print a different type of data file: <sub>~</sub> {.output} u 0:100:end DumpTaskGrid <sub>~</sub></p>
+<p>There are tons of actions that we could add. For instance, we could periodically kill off a bunch of organisms. A (mostly) complete list is available <a href="https://github.com/devosoft/avida/wiki/List-of-actions">here</a>.</p>
+<p>Let’s empty the data directory, and try running Avida again. We can tell it to use the new events file we made with the -s flag:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">rm</span> -r data
+$ <span class="kw">./avida</span> -set EVENT_FILE events_test.cfg</code></pre>
+<p>This time, it should stop after 500 updates. If we go back to the data directory, we’ll see the new files we printed out:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">cd</span> data
+$ <span class="kw">ls</span></code></pre>
+<pre class="output"><code>average.dat      dominant.dat       grid_task.300.dat  tasks.dat
+count.dat        grid_task.0.dat    grid_task.400.dat  time.dat
+detail-0.spop    grid_task.100.dat  grid_task.500.dat
+detail-500.spop  grid_task.200.dat  resource.dat</code></pre>
+<p>The <code>grid_task.*.dat</code> files are an example of spatial data files in Avida. They represent a snapshot of the update they were outputted at. They contain a grid of numbers representing the tasks that the organism in that grid cell at that point in time could perform. If you look at them all, you can see the population expanding out from original organism.</p>
+<p>Now it’s time to take a look at the main configuration file, <code>avida.cfg</code>. This is where all of the options for how to run Avida are set. It can be pretty overwhelming. Don’t worry - you don’t need to understand what all of the configuration options do. For any given experiment, we leave the vast majority of these set to their defaults.</p>
+<p>Notice that the file to use as the events file is one of the config options: <sub>~</sub> {.output} EVENT_FILE events.cfg <sub>~</sub></p>
+<p>When we ran Avida with the <code>-set EVENT_FILE events_test.cfg</code> flag, we were actually telling Avida to set this configuration option to the specified value before starting the run. <code>-set</code> works on any option in <code>avida.cfg</code>. Often, for the purposes of record-keeping, we prefer to set options on the command-line like this, rather than actually changing the config file. That way, it’s obvious from looking at the command we executed what conditions each replicate was run with.</p>
+<section class="challenge panel panel-success">
+<div class="panel-heading">
+<h2><span class="glyphicon glyphicon-pencil"></span>Playing with config settings</h2>
+</div>
+<div class="panel-body">
+<p>Choose a config setting and run Avida with it set to a different value.</p>
+<p>Here are some good choices: - WORLD_X - WORLD_Y - WORLD_GEOMETRY - BIRTH_METHOD (try 4, 8, or 11) (if you use 11, set DISPERSAL_RATE to something greater than 0)</p>
+</div>
+</section>
+<p>There are two more configuration files. The first is the instruction set. This file tells Avida which instructions are allowed to be used in genomes. The default is <code>instset-heads.cfg</code>.</p>
+<p>If we take a look at it, we can see that that’s pretty much all it is:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">head</span> instset-heads.cfg</code></pre>
+<pre class="output"><code>INSTSET heads_default:hw_type=0
+
+# No-ops
+INST nop-A         # a
+INST nop-B         # b
+INST nop-C         # c
+
+# Flow control operations
+INST if-n-equ      # d
+INST if-less       # e</code></pre>
+<p>Everything preceeded with a <code>#</code> is a comment. The letter comments next to each instruction indicate what letter will be used to represent that instruction when printing out organismss genotypes. Letters are assigned in sequence to the instructions listed in the file, so the comment is just a reference for the user.</p>
+<p>There are a few other commonly used instruction sets provided with Avida. One is <code>instset-heads-sex.cfg</code>, which is used in set-ups in which recombination between organisms is allowed. If we look at <code>instset-heads-sex.cfg</code>, it’s pretty similar to <code>instset-head.cfg</code>. We can use a program called <code>diff</code> to see what the differences are:</p>
+<pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="kw">diff</span> instset-heads.cfg instset-heads-sex.cfg</code></pre>
+<pre class="output"><code>1c1
+&lt; INSTSET heads_default:hw_type=0
+---
+&gt; INSTSET heads_sex:hw_type=0
+35c35
+&lt; INST h-divide      # x
+---
+&gt; INST divide-sex    # x
+39c39
+&lt; INST h-search      # z
+\ No newline at end of file
+---
+&gt; INST h-search      # z</code></pre>
+<p>This tells us that there are three differences in the files: * Line 1 changed because the instruction sets are labeled different things (<code>heads_default</code> vs. <code>heads_sex</code>) * Line 35 changed because <code>instset-heads-sex.cfg</code> replaces the normal divide command with one that uses sexual recombination * Line 39 changed because one file has an empty line at the bottom and the other does not (this doesn’t matter)</p>
+<p>Lastly, there’s the environment file. This is probably the most flexible of the configuration files. It’s where you can specify reactions and resources.</p>
+<p>TODO: More on environment</p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/swcarpentry/shell-novice">Source</a>
+        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+  </body>
+</html>
