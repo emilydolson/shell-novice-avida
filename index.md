@@ -21,21 +21,9 @@ These lessons will start you on a path towards using these resources effectively
 > for the same thing), you're ready for this lesson.
 >
 > If you're already comfortable manipulating files and directories,
-> searching for files with `grep` and `find`, and writing simple loops
-> and scripts, you probably won't learn much from this lesson.
+> connecting to remote computing clusters, and submitting jobs to
+> them, you probably won't get much from this lesson.
 
-> ## Getting ready {.getready}
->
-> You need to download some files to follow this lesson:
-> 
-> 1. Make a new folder in your Desktop called `shell-novice`.
-> 2. Download [shell-novice-data.zip](./shell-novice-data.zip) and move the file to this folder.
-> 3. If it's not unzipped yet, double-click on it to unzip it. You should end up with a new folder called `data`.
-> 4. You can access this folder from the Unix shell with:
->
-> ~~~ {.input}
-> $ cd && cd Desktop/shell-novice/data
-> ~~~
 
 ## Topics
 
